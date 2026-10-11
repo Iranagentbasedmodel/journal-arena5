@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "journal-arena finding v3 (dual-grounded, decision-valued)",
+  "type": "object",
+  "required": ["claim_id", "gid", "verdict", "lit_quote", "lit_tier", "severity", "action"],
+  "properties": {
+    "claim_id": {"type": "string", "description": "registry id of the manuscript claim (E1) or audit item id"},
+    "gid": {"type": "string", "enum": ["E1","E2","E3","E4","E5","E6","E7","E8","E9","E10","COUNCIL"]},
+    "verdict": {"type": "string", "description": "group-specific verdict vocabulary (see task/10b-group-playbooks.md)"},
+    "lit_quote_id": {"type": "string", "pattern": "^L:(g\\d+-\\d+|shared-\\d+)$", "description": "anchor into work/ledger.jsonl quote_bank"},
+    "lit_quote": {"type": "string", "minLength": 15, "description": "exact quote from STUDIED LITERATURE (law 2a)"},
+    "lit_locator": {"type": "string", "description": "§/¶/table locator inside the cited work"},
+    "lit_tier": {"type": "string", "enum": ["body", "abstract", "metadata"], "description": "metadata => finding is quarantined"},
+    "ms_quote": {"type": "string", "description": "exact manuscript quote, ONLY for claim mapping (law 2b)"},
+    "ms_locator": {"type": "string"},
+    "effect_vs_claim": {"type": "string", "description": "numeric comparison: claimed magnitude vs measured/literature magnitude"},
+    "severity": {"type": "string", "enum": ["fatal", "major", "minor", "style"]},
+    "action": {"type": "string", "maxLength": 240, "description": "ONE actionable move (decision-value law: <=3 per agent)"},
+    "owner_group": {"type": "string"},
+    "quarantined": {"type": "boolean", "default": false, "description": "true if lit anchor missing or tier=metadata"}
+  },
+  "allOf": [
+    {"if": {"properties": {"lit_tier": {"const": "metadata"}}}, "then": {"properties": {"quarantined": {"const": true}}}},
+    {"if": {"properties": {"gid": {"const": "E9"}}}, "then": {"properties": {"severity": {"const": "style"}}}}
+  ]
+}
